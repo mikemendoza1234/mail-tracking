@@ -1,19 +1,83 @@
 {
   "name": "mail-tracking",
   "version": "1.0.0",
-  "description": "Email tracking microservice",
-  "main": "src/index.js",
   "type": "module",
   "scripts": {
+    "dev": "node --env-file=.env src/index.js",
     "start": "node src/index.js",
-    "db:setup": "node scripts/setup-db.js"
+    "worker": "node --env-file=.env src/worker.js",
+    "dev:all": "concurrently \"npm run dev\" \"npm run worker\"",
+    "migrate": "node scripts/migrate.js",
+    "migrate:create": "node scripts/create-migration.js",
+    "seed": "node scripts/seed.js",
+    "db:reset": "npm run migrate:reset && npm run seed",
+    "test": "node --experimental-vm-modules --env-file=.env.test node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules --env-file=.env.test node_modules/jest/bin/jest.js --watch",
+    "test:integration": "node --experimental-vm-modules --env-file=.env.test node_modules/jest/bin/jest.js tests/integration/ --runInBand",
+    "test:unit": "node --experimental-vm-modules --env-file=.env.test node_modules/jest/bin/jest.js tests/unit/",
+    "test:coverage": "node --experimental-vm-modules --env-file=.env.test node_modules/jest/bin/jest.js --coverage",
+    "test:load:register": "npx artillery run tests/load/register.yml",
+    "test:load:tracking": "npx artillery run tests/load/tracking.yml",
+    "test:load:all": "node scripts/run-load-tests.js",
+    "test:setup": "node scripts/test-setup.js",
+    "test:cleanup": "node scripts/test-cleanup.js",
+    "test:endpoints": "node scripts/test-endpoints.js",
+    "test:workflow": "node scripts/test-workflow.js",
+    "verify:local": "cross-env RAILWAY_URL=http://localhost:3000 node scripts/verify-production.js",
+    "verify:production": "cross-env RAILWAY_URL=https://your-app.railway.app node scripts/verify-production.js",
+    "railway:deploy": "bash scripts/railway-deploy.sh",
+    "railway:logs": "railway logs",
+    "railway:worker-logs": "railway logs --service worker",
+    "lint": "npx eslint src/",
+    "format": "npx prettier --write 'src/**/*.js'",
+    "postinstall": "node scripts/postinstall.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.1",
-    "fastify": "^4.26.1",
-    "pg": "^8.11.3"
+    "axios": "^1.13.4",
+    "bcrypt": "^5.1.1",
+    "bull": "^4.11.5",
+    "bullmq": "^5.4.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.26.2",
+    "geoip-lite": "^1.4.10",
+    "handlebars": "^4.7.8",
+    "ioredis": "^5.3.2",
+    "jsonwebtoken": "^9.0.2",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.13",
+    "pg": "^8.11.3",
+    "redis": "^4.6.12",
+    "ua-parser-js": "^1.0.37",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "@types/jest": "^29.5.12",
+    "artillery": "^2.0.12",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.3",
+    "prettier": "^3.2.5",
+    "supertest": "^6.3.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {},
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/server.js"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ]
   }
 }

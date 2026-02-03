@@ -1,0 +1,18 @@
+[phases.setup]
+cmds = [
+  "apt-get update",
+  "apt-get install -y postgresql-client"
+]
+
+[phases.install]
+cmds = ["npm ci --legacy-peer-deps"]
+
+[phases.build]
+cmds = ["echo 'Build completed'"]
+
+[start]
+cmd = "node src/server.js"
+
+[processes]
+api = "node src/server.js"
+worker = "node src/worker.js"

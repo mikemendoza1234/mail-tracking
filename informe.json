@@ -1,0 +1,211 @@
+{
+    "project_status": "active",
+    "backend_url": "http://localhost:3000",
+    "api_version": "1.0.0",
+    "tech_stack": {
+        "runtime": "Node.js",
+        "framework": "Fastify",
+        "database": "PostgreSQL",
+        "queue_system": "Redis/Bull",
+        "authentication": "JWT"
+    },
+    "endpoints": [
+        {
+            "method": "POST",
+            "path": "/api/auth/register",
+            "description": "Register a new organization and admin user",
+            "request_body": {
+                "orgName": "string",
+                "email": "string",
+                "password": "string",
+                "domain": "string (optional)"
+            },
+            "response_format": {
+                "token": "string",
+                "user": {
+                    "id": "uuid",
+                    "email": "string",
+                    "role": "string"
+                },
+                "organization": {
+                    "id": "uuid",
+                    "name": "string"
+                }
+            },
+            "authentication_required": false,
+            "status": "implemented"
+        },
+        {
+            "method": "POST",
+            "path": "/api/auth/login",
+            "description": "Login authentication",
+            "request_body": {
+                "email": "string",
+                "password": "string"
+            },
+            "response_format": {
+                "token": "string"
+            },
+            "authentication_required": false,
+            "status": "implemented"
+        },
+        {
+            "method": "GET",
+            "path": "/api/contacts",
+            "description": "List contacts for organization",
+            "authentication_required": true,
+            "status": "implemented"
+        },
+        {
+            "method": "POST",
+            "path": "/api/contacts",
+            "description": "Create or update contact",
+            "authentication_required": true,
+            "status": "implemented"
+        },
+        {
+            "method": "GET",
+            "path": "/o/:orgId/:emailId.png",
+            "description": "Tracking pixel for email opens",
+            "authentication_required": false,
+            "status": "implemented"
+        },
+        {
+            "method": "GET",
+            "path": "/c/:orgId/:emailId/:encodedUrl",
+            "description": "Click tracking redirect",
+            "authentication_required": false,
+            "status": "implemented"
+        },
+        {
+            "method": "POST",
+            "path": "/api/workflows",
+            "description": "Create automation workflow",
+            "authentication_required": true,
+            "status": "implemented"
+        },
+        {
+            "method": "POST",
+            "path": "/api/workflows/:id/trigger",
+            "description": "Manually trigger a workflow",
+            "authentication_required": true,
+            "status": "implemented"
+        }
+    ],
+    "database_schema": {
+        "tables": [
+            {
+                "name": "organizations",
+                "columns": [
+                    "id",
+                    "name",
+                    "domain",
+                    "settings",
+                    "created_at"
+                ]
+            },
+            {
+                "name": "users",
+                "columns": [
+                    "id",
+                    "organization_id",
+                    "email",
+                    "password_hash",
+                    "role"
+                ]
+            },
+            {
+                "name": "contacts",
+                "columns": [
+                    "id",
+                    "organization_id",
+                    "email",
+                    "first_name",
+                    "last_name",
+                    "metadata"
+                ]
+            },
+            {
+                "name": "emails",
+                "columns": [
+                    "id",
+                    "organization_id",
+                    "contact_id",
+                    "subject",
+                    "body_html"
+                ]
+            },
+            {
+                "name": "events",
+                "columns": [
+                    "id",
+                    "organization_id",
+                    "email_id",
+                    "type",
+                    "created_at"
+                ]
+            },
+            {
+                "name": "workflows",
+                "columns": [
+                    "id",
+                    "organization_id",
+                    "name",
+                    "trigger_type",
+                    "nodes"
+                ]
+            },
+            {
+                "name": "workflow_executions",
+                "columns": [
+                    "id",
+                    "workflow_id",
+                    "status",
+                    "current_node"
+                ]
+            }
+        ]
+    },
+    "core_features": [
+        {
+            "name": "Authentication",
+            "status": "implemented",
+            "details": "JWT based with Organization segregation"
+        },
+        {
+            "name": "Email Tracking",
+            "status": "implemented",
+            "details": "Open tracking (pixel) and click tracking (redirects)"
+        },
+        {
+            "name": "Workflow Engine",
+            "status": "partial",
+            "details": "Definition and Trigger endpoints exist. Worker logic partially implemented in worker.js"
+        }
+    ],
+    "testing_status": {
+        "unit_tests": "yes",
+        "integration_tests": "yes",
+        "load_tests": "yes",
+        "coverage": "unknown"
+    },
+    "deployment_info": {
+        "platform": "Local / Ready for Railway",
+        "environment_variables": [
+            "DATABASE_URL",
+            "REDIS_URL",
+            "JWT_SECRET",
+            "PORT"
+        ]
+    },
+    "missing_components": [
+        "Full workflow execution logic (worker node processing)",
+        "Email sending provider integration (SMTP/Resend)",
+        "Frontend UI"
+    ],
+    "immediate_next_steps": [
+        "Implement email sending logic in worker",
+        "Add more workflow node types (delay, condition)",
+        "Setup CI/CD pipeline"
+    ]
+}

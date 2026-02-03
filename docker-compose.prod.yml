@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mail_tracking
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/mail_tracking
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: railway-production-secret
+      NODE_ENV: production
+    depends_on:
+      - postgres
+      - redis
+    command: node src/server.js
+
+  worker:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/mail_tracking
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: railway-production-secret
+      NODE_ENV: production
+    depends_on:
+      - postgres
+      - redis
+    command: node src/worker.js
+
+volumes:
+  postgres_data:

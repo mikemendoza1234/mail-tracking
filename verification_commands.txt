@@ -1,0 +1,20 @@
+# Verification Commands
+
+# 1. Health Check
+curl http://localhost:3000/health
+
+# 2. Register (Replace details if needed)
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d "{\"orgName\":\"TestConfig\",\"email\":\"verify@test.com\",\"password\":\"123456\"}"
+
+# 3. Login
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"verify@test.com\",\"password\":\"123456\"}"
+
+# 4. Check Database Connection
+node -e "import('./src/db.js').then(m => m.default.query('SELECT 1').then(() => console.log('DB Connection: OK')).catch(e => console.error(e))).then(() => process.exit(0))"
+
+# 5. Run Tests
+npm run test:integration

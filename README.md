@@ -1,89 +1,63 @@
-# Email Tracking Microservice
+# 📧 Mail Marketing Platform
 
-A production-grade microservice for tracking email opens using an invisible pixel.
+## Quick Start
 
-## Features
-
-- GET `/o/:emailId.png` returns a transparent 1x1 PNG.
-- Logs "email_opened" events to PostgreSQL.
-- Built with Fastify, PostgreSQL (raw SQL with `pg`), and ES Modules.
-
-## Prerequisites
-
-- Node.js 20+
-- PostgreSQL database
-
-## Setup
-
-1. **Install Dependencies**
-
-   ```bash
-   npm install
-   ```
-
-2. **Configure Environment**
-   Duplicate `.env.example` to `.env` and update the `DATABASE_URL`.
-
-   ```bash
-   # Windows PowerShell
-   Copy-Item .env.example .env
-   ```
-
-   Edit `.env`:
-
-   ```ini
-   DATABASE_URL=postgresql://user:password@localhost:5432/mail_tracking
-   PORT=3000
-   ```
-
-3. **Database Setup**
-   Ensure your PostgreSQL server is running and the database specified in `DATABASE_URL` exists.
-   Then run the migration script to create the tables:
-
-   ```bash
-   npm run db:setup
-   ```
-
-## Running the Server
-
-Start the application:
+### Development
 
 ```bash
-npm start
+# Install dependencies
+npm install
+
+# Setup environment
+cp .env.example .env
+# Edit .env with your settings
+
+# Setup database
+npm run test:setup
+
+# Start in development
+# Option 1: Run both API and Worker (Windows/Linux compatible via concurrently)
+npm run dev:all
+
+# Option 2: Run separately
+npm run dev      # Terminal 1: API server
+npm run worker   # Terminal 2: Workflow worker
 ```
 
-The server will start on `http://localhost:3000` (or `PORT` in .env).
+### Testing
 
-## Verification
+```bash
+# Test workflow system
+npm run test:workflow
 
-To verify the installation works as expected:
+# Run all tests
+npm run test
 
-1. **Start the server** in one terminal:
+# Load testing
+npm run test:load:register
+```
 
-   ```bash
-   npm start
-   ```
+### Production (Railway)
 
-2. **Run the test script** in a new terminal:
+```bash
+# Deploy to Railway
+npm run railway:deploy
 
-   ```bash
-   node scripts/test-pixel.js
-   ```
+# Check logs
+npm run railway:logs
+npm run railway:worker-logs
 
-   This script will:
-   - Insert a dummy email into the DB.
-   - Request the pixel for that email.
-   - Verify the pixel response (200 OK, PNG content).
-   - Verify the event was logged in the `events` table.
+# Verify deployment
+npm run verify:production
+```
 
-## API Reference
+## API Endpoints
 
-### Get Tracking Pixel
-
-`GET /o/:emailId.png`
-
-Returns a 1x1 transparent PNG image and logs the access.
-
-**Parameters:**
-
-- `emailId`: Integer ID of the email to track.
+- `GET /health` - Health check
+- `POST /api/auth/register` - Register organization
+- `POST /api/auth/login` - Login
+- `POST /api/contacts` - Create contact
+- `POST /api/workflows` - Create workflow
+- `POST /api/workflows/:id/trigger` - Trigger workflow
+- `GET /o/:orgId/:emailId.png` - Tracking pixel
+- `GET /c/:orgId/:emailId/:encodedUrl` - Click tracking

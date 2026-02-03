@@ -1,0 +1,17 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 300
+      arrivalRate: 30
+      name: 'Sustained Tracking Load'
+  processor: './tracking-processor.js'
+
+scenarios:
+  - name: 'Tracking Events'
+    flow:
+      - function: "generateTrackingData"
+      - get:
+          url: "/o/{{ orgId }}/{{ emailId }}.png"
+          headers:
+            "User-Agent": "{{ userAgent }}"
+            "X-Forwarded-For": "{{ ip }}"
