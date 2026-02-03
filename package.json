@@ -1,0 +1,19 @@
+{
+  "name": "mail-tracking",
+  "version": "1.0.0",
+  "description": "Email tracking microservice",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "db:setup": "node scripts/setup-db.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "fastify": "^4.26.1",
+    "pg": "^8.11.3"
+  }
+}
