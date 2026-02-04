@@ -1,3 +1,27 @@
-node_modules
+# Environment
 .env
-.DS_Store
+.env.local
+.env.production
+.env.development
+.env.test
+
+# Secrets
+*.pem
+*.key
+*.crt
+
+# Logs
+*.log
+logs/
+
+# Runtime
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
